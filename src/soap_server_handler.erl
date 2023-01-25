@@ -219,8 +219,8 @@ check_soap_conformance(Soap_req) ->
     catch
         error:Reason when Reason == function_clause; Reason == undef ->
             default_conformance_check(Soap_req);
-        Class:Reason ->
-            throw(callback_error(Class, Reason, Soap_req, Handler_state))
+        Class:Reason:Stacktrace ->
+            throw(callback_error(Class, Reason, Soap_req, Handler_state, Stacktrace))
     end.
 
 
@@ -505,10 +505,10 @@ try_header_fun(Fun, Soap_req, Handler_s) ->
         error:function_clause ->
             {ok, Soap_req, Handler_s};
         Class:Reason:Stacktrace ->
-            throw(callback_error(Class, Reason, Soap_req, Handler_s))
+            throw(callback_error(Class, Reason, Soap_req, Handler_s, Stacktrace))
     end.
 
-callback_error(Class, Reason, Soap_req, Handler_s) ->
+callback_error(Class, Reason, Soap_req, Handler_s, Stacktrace) ->
     #soap_error{class = Class, 
                 reason = Reason, 
                 type = server, 
